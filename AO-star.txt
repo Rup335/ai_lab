@@ -1,0 +1,93 @@
+import heapq
+
+# Directions: Up, Down, Left, Right
+moves = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+# Goal state
+goal = ((1, 2, 3),
+        (4, 5, 6),
+        (7, 8, 0))
+
+# Manhattan distance heuristic
+def manhattan(state):
+    h = 0
+    for i in range(3):
+        for j in range(3):
+            val = state[i][j]
+            if val != 0:
+                target_i = (val - 1) // 3
+                target_j = (val - 1) % 3
+                h += abs(i - target_i) + abs(j - target_j)
+    return h
+
+# Find blank position
+def find_blank(state):
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] == 0:
+                return i, j
+
+# Generate neighbors (OR choices)
+def neighbors(state):
+    bx, by = find_blank(state)
+    nbrs = []
+
+    for dx, dy in moves:
+        nx, ny = bx + dx, by + dy
+        if 0 <= nx < 3 and 0 <= ny < 3:
+
+            # Make mutable copy
+            new_state = []
+            for r in state:
+                row = []
+                for val in r:
+                    row.append(val)
+                new_state.append(row)
+
+            # Swap blank with neighbor
+            new_state[bx][by], new_state[nx][ny] = new_state[nx][ny], new_state[bx][by]
+
+            # Convert back to tuple
+            t_state = ()
+            for r in new_state:
+                t_state += (tuple(r),)
+
+            nbrs.append(t_state)
+
+    return nbrs
+
+# AO* search for 8-puzzle (OR problem)
+def ao_star(start):
+
+    # Priority queue: (f_score, g_score, current_state, path)
+    pq = [(manhattan(start), 0, start, (start,))]
+    visited = [start]
+
+    while len(pq) > 0:
+        f, g, state, path = heapq.heappop(pq)
+
+        if state == goal:
+            print("Solution found in", g, "moves (AO*):\n")
+            step = 1
+            for s in path:
+                print("Step", step, ":")
+                for r in s:
+                    print(r)
+                print()
+                step += 1
+            return
+
+        # Generate OR children
+        for n in neighbors(state):
+            if n not in visited:
+                visited.append(n)
+                heapq.heappush(pq, (g + 1 + manhattan(n), g + 1, n, path + (n,)))
+
+    print("No solution found")
+
+# Example start state (minimum 3 moves)
+start = ((1, 2, 3),
+         (4, 0, 6),
+         (7, 5, 8))
+
+ao_star(start)

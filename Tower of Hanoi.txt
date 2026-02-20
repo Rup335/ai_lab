@@ -1,0 +1,26 @@
+% Base case: move 1 disk
+hanoi(1, Source, Target, _) :-
+    write('Move disk from '),
+    write(Source),
+    write(' to '),
+    write(Target), nl.
+
+% Recursive case: move N disks
+hanoi(N, Source, Target, Aux) :-
+    N > 1,
+    M is N - 1,
+
+    % Step 1: Move N-1 disks to auxiliary
+    hanoi(M, Source, Aux, Target),
+
+    % Step 2: Move largest disk to target
+    hanoi(1, Source, Target, _),
+
+    % Step 3: Move N-1 disks from auxiliary to target
+    hanoi(M, Aux, Target, Source).
+
+% Start the problem with 3 disks
+:- initialization(main).
+
+main :-
+    hanoi(3, left, right, middle).

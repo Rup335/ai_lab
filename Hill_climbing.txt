@@ -1,0 +1,82 @@
+# 8-Puzzle using Hill Climbing Algorithm
+
+# Goal State
+goal_state = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 0]
+]
+
+# Heuristic: number of misplaced tiles
+def heuristic(state):
+    count = 0
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] != 0 and state[i][j] != goal_state[i][j]:
+                count += 1
+    return count
+
+# Find position of blank (0)
+def find_blank(state):
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] == 0:
+                return i, j
+
+# Generate neighbors by moving the blank
+def get_neighbors(state):
+    neighbors = []
+    x, y = find_blank(state)
+    moves = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # up, down, left, right
+
+    for dx, dy in moves:
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < 3 and 0 <= ny < 3:
+            new_state = [row[:] for row in state]  # copy state
+            # Swap blank with neighbor
+            new_state[x][y], new_state[nx][ny] = new_state[nx][ny], new_state[x][y]
+            neighbors.append(new_state)
+    return neighbors
+
+# Hill Climbing Algorithm
+def hill_climbing(start):
+    current = start
+    while True:
+        h_current = heuristic(current)
+        print("Current State (h =", h_current, "):")
+        for row in current:
+            print(row)
+        print()
+
+        # Goal reached
+        if h_current == 0:
+            print("Goal State Reached!")
+            return current
+
+        neighbors = get_neighbors(current)
+        next_state = current
+        next_h = h_current
+
+        # Select neighbor with lowest heuristic
+        for n in neighbors:
+            h = heuristic(n)
+            if h < next_h:
+                next_state = n
+                next_h = h
+
+        # If no improvement, stop
+        if next_h >= h_current:
+            print("No better neighbor found. Stopping.")
+            return current
+
+        current = next_state
+
+# Initial State
+initial_state = [
+    [1, 2, 3],
+    [4, 0, 6],
+    [7, 5, 8]
+]
+
+# Run Hill Climbing
+hill_climbing(initial_state)

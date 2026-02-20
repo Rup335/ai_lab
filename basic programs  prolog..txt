@@ -1,0 +1,39 @@
+% Program 1: Simple Parent Facts
+
+male(john).
+female(mary).
+
+parent(john, alex).
+parent(mary, alex).
+
+% Sample Query:
+% ?- parent(john, alex).
+% Output: true.
+
+% Program 2: Family Relationship (Father Rule)
+
+male(paul).
+
+parent(paul, mike).
+
+% Rule: X is father of Y if X is male and parent of Y
+father(X, Y) :-
+    male(X),
+    parent(X, Y).
+
+% Sample Queries:
+% ?- father(john, alex).  Output: true.
+% ?- father(paul, mike).  Output: true.
+
+% Program 3: Check Even Number
+
+even(0).
+
+even(N) :-
+    N > 0,
+    N2 is N - 2,
+    even(N2).
+
+% Sample Queries:
+% ?- even(4).  Output: true.
+% ?- even(5).  Output: false.
